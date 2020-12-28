@@ -58,3 +58,11 @@ kubeadm config images pull
 
 自动生成密钥
 kubeadm alpha certs certificate-key
+
+将pod的端口转发到本地，
+
+可以在wsl2里使用kubectl port-forward 进行转发，这样就可以使用localhost访问某些特殊的业务，比如dashboard
+kubectl port-forward TYPE/NAME [options] [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]
+example: 
+# Listen on port 8888 on localhost and selected IP, forwarding to 5000 in the pod
+  kubectl port-forward --address localhost,10.240.173.67 pod/mypod 8888:5000
