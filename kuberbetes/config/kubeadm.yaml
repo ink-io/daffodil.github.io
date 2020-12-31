@@ -27,6 +27,24 @@ apiServer:
   - "10.246.195.178"
   - "10.246.195.110"
   timeoutForControlPlane: 4m0s
+  extraArgs:
+    audit-log-maxage: "3"
+    audit-log-maxbackup: "3"
+    audit-log-maxsize: "64"
+    audit-log-mode: batch
+    audit-log-path: /var/log/audit.log
+    audit-policy-file: /etc/kubernetes/audit-policy.yaml
+    authorization-mode: Node,RBAC
+  extraVolumes:
+  - hostPath: /etc/kubernetes/audit-policy.yaml
+    mountPath: /etc/kubernetes/audit-policy.yaml
+    name: audit
+    pathType: File
+    readOnly: true
+  - hostPath: /var/log/audit.log
+    mountPath: /var/log/audit.log
+    name: audit-log
+    pathType: FileOrCreate
 apiVersion: kubeadm.k8s.io/v1beta2
 certificatesDir: /etc/kubernetes/pki
 clusterName: kubernetes
@@ -48,12 +66,12 @@ kubernetesVersion: v1.19.4
 networking:
   dnsDomain: cluster.local
   serviceSubnet: 10.96.0.0/12
-  podSubnet: "192.168.188.0/24"
+  podSubnet: "192.168.0.0/16"
 scheduler: {}
 controlPlaneEndpoint: 10.246.195.110:6443
 ---
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
-featureGates:
-  SupportIPVSProxyMode: true
+featureGates:                #
+  SupportIPVSProxyMode: true # 1.20.0好像不需要这两行
 mode: ipvs
